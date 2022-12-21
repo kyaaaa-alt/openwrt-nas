@@ -183,3 +183,40 @@ Check your subdomain to make sure the tunneling running!
 **to make your tunnel running automatically on system boot, please follow step below**
 
 ## Run Cloudflared Tunnel as a service on OpenWRT
+Now we will create an init.d service to start cloudflared tunnel whenever our device starts.
+### 1. Create init.d files
+Customize the SERVICENAME, below i set `tunnel1` for example
+Run command below
+```
+SERVICENAME="tunnel1"
+
+touch /etc/init.d/${SERVICENAME} && chmod +x /etc/init.d/${SERVICENAME} && vim /etc/init.d/${SERVICENAME}
+```
+
+Add the following fields to the file:
+```txt
+#!/bin/sh /etc/rc.common
+  
+START=99
+
+USE_PROCD=1
+NAME=tunnel1
+PROG=/usr/bin/cloudflared
+
+start_service() {
+        procd_open_instance
+        procd_set_param command "$PROG" tunnel run <TUNNEL-UUID>
+        procd_set_param respawn
+        procd_set_param stdout 1
+        procd_set_param stderr 1
+        procd_close_instance
+}
+```
+**Don't forget to change <TUNNEL-UUID> above**
+Save the file, then run this following command :
+```shell
+$ /etc/init.d/tunnel1 enable
+$ /etc/init.d/tunnel1 start
+```
+
+All Done !
