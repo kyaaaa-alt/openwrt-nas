@@ -34,27 +34,30 @@ version: '2'
 
 services:
   db:
-    image: mariadb:10.1
+    image: tobi312/rpi-mariadb:10.3
     environment:
       MYSQL_ROOT_PASSWORD: your_mysql_root_password
-      MYSQL_USER: your_filerun_username
-      MYSQL_PASSWORD: your_filerun_password
-      MYSQL_DATABASE: your_filerun_database
+      MYSQL_USER: your_mysql_username
+      MYSQL_PASSWORD: your_mysql_password
+      MYSQL_DATABASE: your_mysql_database
+      PUID: 1000
+      PGID: 1000
+      TZ: Asia/Jakarta
     volumes:
       - /filerun/db:/var/lib/mysql
 
   web:
-    image: filerun/filerun
+    image: filerun/filerun:arm64v8
     environment:
       FR_DB_HOST: db
       FR_DB_PORT: 3306
-      FR_DB_NAME: your_filerun_database
-      FR_DB_USER: your_filerun_username
-      FR_DB_PASS: your_filerun_password
-      APACHE_RUN_USER: www-data
-      APACHE_RUN_USER_ID: 33
-      APACHE_RUN_GROUP: www-data
-      APACHE_RUN_GROUP_ID: 33
+      FR_DB_NAME: your_mysql_database
+      FR_DB_USER: your_mysql_username
+      FR_DB_PASS: your_mysql_password
+      APACHE_RUN_USER: pi
+      APACHE_RUN_USER_ID: 1000
+      APACHE_RUN_GROUP: pi
+      APACHE_RUN_GROUP_ID: 1000
     depends_on:
       - db
     links:
